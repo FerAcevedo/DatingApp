@@ -7,9 +7,11 @@ import { BehaviorSubject, map } from 'rxjs';
   providedIn: 'root'
 })
 export class AccountService {
- baseUrl = 'https://localhost:5001/api/'; 
+
+baseUrl = 'https://localhost:5001/api/'; 
 private currentUserSource = new BehaviorSubject<User | null>(null);
 currentUserSource$ = this.currentUserSource.asObservable();
+
   constructor(private http: HttpClient) { 
   }
 
@@ -26,7 +28,7 @@ currentUserSource$ = this.currentUserSource.asObservable();
   }
   
   register(model:any){
-    return this.http.post<User>(this.baseUrl + 'account/register',model).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
       map(user => {
         if(user)
           {

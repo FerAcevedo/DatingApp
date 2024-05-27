@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Interfaces;
+using API.Middleware;
 using API.Services;
 
 internal class Program
@@ -18,7 +19,13 @@ internal class Program
         builder.Services.AddIdentityServices(builder.Configuration);
         var app = builder.Build();
 
+        if (builder.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();            
+        }
+
         // Configure the HTTP request pipeline.
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseCors(build => build
             .AllowAnyHeader()

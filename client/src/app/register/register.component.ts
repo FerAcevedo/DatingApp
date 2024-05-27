@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
+import { RouterModule } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -16,7 +18,7 @@ model: any = {};
   ngOnInit(): void {
   }
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private toastr: ToastrService) {
   }
 
   register(){
@@ -25,7 +27,7 @@ model: any = {};
         next: () => {
           this.cancel();
         },
-        error: err => console.log(err)
+        error: err => this.toastr.error(err.error)
       }
     );
   }
