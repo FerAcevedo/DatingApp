@@ -1,12 +1,14 @@
+using API.Data;
 using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
+using Microsoft.EntityFrameworkCore;
 
-internal class Program
-{
-    private static void Main(string[] args)
-    {
+//public class Program
+//{
+    //public static async void Main(string[] args)
+    //{
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -16,6 +18,8 @@ internal class Program
 
         builder.Services.AddCors();
         builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         builder.Services.AddIdentityServices(builder.Configuration);
         var app = builder.Build();
 
@@ -36,6 +40,21 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var context = services.GetRequiredService<DataContext>();
+            await context.Database.MigrateAsync();
+            await Seed.SeedUSers(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred during migration");
+        }
         app.Run();
-    }
-}
+    //}
+//}
